@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>設計支援ツール集 | fdoyoshikazuhora-sys</title>
+    <meta name="description" content="PDF-CAD、JWW Gateway、設備設計計算ツールへの総合入口です。ブラウザで使える設計支援ツールと関連リポジトリをまとめています。">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" href="https://fdoyoshikazuhora-sys.github.io/">
+    <meta property="og:title" content="設計支援ツール集 | fdoyoshikazuhora-sys">
+    <meta property="og:description" content="公開中の設計支援ツールへの総合入口。PDF-CAD、JWW Gateway、設備設計計算ツールをまとめています。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fdoyoshikazuhora-sys.github.io/">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #18202a;
+        --muted: #5f6b7a;
+        --paper: #fbfcfd;
+        --panel: #ffffff;
+        --line: #d8e0e8;
+        --tool: #0e766d;
+        --tool-dark: #0a4f48;
+        --calc: #a84422;
+        --report: #365da8;
+        --soft-tool: #e5f3f1;
+        --soft-calc: #f8ebe4;
+        --soft-report: #e9eef8;
+        --shadow: 0 22px 60px rgba(24, 32, 42, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif;
+        line-height: 1.65;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .site-header,
+      .site-footer {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 18px 0;
+      }
+
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        color: var(--ink);
+        font-size: 15px;
+        font-weight: 750;
+        text-decoration: none;
+      }
+
+      .brand-mark {
+        display: inline-grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        flex: 0 0 auto;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--tool-dark);
+        font-size: 13px;
+        letter-spacing: 0;
+      }
+
+      .site-nav {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .site-nav a {
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+      }
+
+      .hero {
+        position: relative;
+        min-height: 430px;
+        display: grid;
+        align-items: end;
+        overflow: hidden;
+        padding: 86px max(16px, calc((100vw - 1120px) / 2)) 56px;
+        background: #1c252c url("assets/pdf-cad-preview.png") center 18% / cover no-repeat;
+        color: #ffffff;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(90deg, rgba(14, 22, 28, 0.86) 0%, rgba(14, 22, 28, 0.66) 46%, rgba(14, 22, 28, 0.24) 100%),
+          linear-gradient(0deg, rgba(14, 22, 28, 0.88) 0%, rgba(14, 22, 28, 0.22) 52%, rgba(14, 22, 28, 0.12) 100%);
+      }
+
+      .hero-inner {
+        position: relative;
+        z-index: 1;
+        max-width: 760px;
+      }
+
+      h1 {
+        margin: 0 0 18px;
+        font-size: clamp(38px, 7vw, 76px);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .hero-lead {
+        max-width: 700px;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 18px;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 26px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border: 1px solid rgba(255, 255, 255, 0.42);
+        border-radius: 8px;
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.12);
+        text-decoration: none;
+        font-weight: 750;
+      }
+
+      .button.primary {
+        border-color: #ffffff;
+        color: var(--tool-dark);
+        background: #ffffff;
+      }
+
+      .section {
+        width: min(1120px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 54px 0;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(25px, 4vw, 36px);
+        line-height: 1.18;
+        letter-spacing: 0;
+      }
+
+      .section-note {
+        max-width: 420px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .tool-card {
+        display: flex;
+        min-height: 100%;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--panel);
+        box-shadow: 0 8px 24px rgba(24, 32, 42, 0.06);
+      }
+
+      .preview {
+        min-height: 172px;
+        border-bottom: 1px solid var(--line);
+        background: #eef3f7;
+      }
+
+      .preview img {
+        display: block;
+        width: 100%;
+        height: 172px;
+        object-fit: cover;
+        object-position: left top;
+      }
+
+      .preview-surface {
+        position: relative;
+        display: grid;
+        gap: 12px;
+        height: 172px;
+        padding: 18px;
+        overflow: hidden;
+      }
+
+      .preview-surface.gateway {
+        background:
+          linear-gradient(135deg, #f7fbff 0%, #e8eef8 100%);
+      }
+
+      .preview-surface.calculator {
+        background:
+          linear-gradient(135deg, #fff8f4 0%, #f5e2d6 100%);
+      }
+
+      .terminal-bar,
+      .calc-row,
+      .report-bar {
+        border-radius: 6px;
+        background: #ffffff;
+        box-shadow: 0 10px 28px rgba(24, 32, 42, 0.08);
+      }
+
+      .terminal-bar {
+        height: 38px;
+        border-left: 5px solid var(--report);
+      }
+
+      .report-bar {
+        height: 72px;
+        border: 1px solid #d3deef;
+      }
+
+      .report-lines {
+        display: grid;
+        grid-template-columns: 1.4fr 0.8fr;
+        gap: 9px;
+        padding: 13px;
+      }
+
+      .report-lines span,
+      .calc-row span,
+      .calc-result span {
+        display: block;
+        height: 8px;
+        border-radius: 999px;
+        background: #b7c5dc;
+      }
+
+      .calc-row {
+        display: grid;
+        grid-template-columns: 1fr 76px;
+        gap: 12px;
+        align-items: center;
+        height: 42px;
+        padding: 0 13px;
+      }
+
+      .calc-row span {
+        background: #d1aa98;
+      }
+
+      .calc-result {
+        display: grid;
+        gap: 9px;
+        padding: 13px;
+        border: 1px solid #e2c8bb;
+        border-radius: 6px;
+        background: #ffffff;
+      }
+
+      .calc-result span {
+        background: #b95b34;
+      }
+
+      .tool-body {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 20px;
+      }
+
+      .tool-kicker {
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      .tool-card h3 {
+        margin: 0 0 10px;
+        font-size: 22px;
+        line-height: 1.22;
+      }
+
+      .tool-card p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .tool-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: auto;
+        padding-top: 20px;
+      }
+
+      .tool-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        color: var(--ink);
+        background: #ffffff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .tool-link.primary {
+        border-color: var(--tool);
+        color: #ffffff;
+        background: var(--tool);
+      }
+
+      .tool-card.gateway .tool-link.primary {
+        border-color: var(--report);
+        background: var(--report);
+      }
+
+      .tool-card.calculator .tool-link.primary {
+        border-color: var(--calc);
+        background: var(--calc);
+      }
+
+      .info-band {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        border-top: 1px solid var(--line);
+      }
+
+      .info-block {
+        padding-top: 28px;
+      }
+
+      .info-block h3 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+
+      .info-block p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .site-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 28px 0 42px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+      }
+
+      @media (max-width: 880px) {
+        .site-header,
+        .section-header,
+        .site-footer {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .tool-grid,
+        .info-band {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .site-nav {
+          width: 100%;
+          justify-content: flex-start;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+
+        .hero {
+          min-height: 500px;
+          padding-top: 70px;
+          background-position: 38% 0;
+        }
+
+        .hero-actions,
+        .tool-links {
+          flex-direction: column;
+        }
+
+        .button,
+        .tool-link {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="https://fdoyoshikazuhora-sys.github.io/" aria-label="設計支援ツール集">
+        <span class="brand-mark" aria-hidden="true">FD</span>
+        <span>fdoyoshikazuhora-sys</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#tools">Tools</a>
+        <a href="#policy">Publish</a>
+        <a href="https://github.com/fdoyoshikazuhora-sys">GitHub</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-inner">
+          <h1 id="hero-title">設計支援ツール集</h1>
+          <p class="hero-lead">PDF図面のCAD化、JWWファイルの解析、設備設計の計算を扱う公開ツールへの総合入口です。</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#tools">ツールを選ぶ</a>
+            <a class="button" href="https://github.com/fdoyoshikazuhora-sys">GitHubを見る</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="tools" aria-labelledby="tools-title">
+        <div class="section-header">
+          <h2 id="tools-title">公開中のツール</h2>
+          <p class="section-note">既存の公開ページは残したまま、このホームページを入口として使う構成です。</p>
+        </div>
+
+        <div class="tool-grid">
+          <article class="tool-card pdf">
+            <div class="preview">
+              <img src="assets/pdf-cad-preview.png" alt="PDF-CAD Tool の画面プレビュー">
+            </div>
+            <div class="tool-body">
+              <p class="tool-kicker">Browser app</p>
+              <h3>PDF-CAD Tool</h3>
+              <p>PDF図面をブラウザで読み込み、線・文字・円・画像要素を整理してDXFとして保存するツールです。</p>
+              <div class="tool-links">
+                <a class="tool-link primary" href="https://fdoyoshikazuhora-sys.github.io/pdf-cad-tool/">開く</a>
+                <a class="tool-link" href="https://github.com/fdoyoshikazuhora-sys/pdf-cad-tool">GitHub</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="tool-card gateway">
+            <div class="preview preview-surface gateway" aria-hidden="true">
+              <div class="terminal-bar"></div>
+              <div class="report-bar">
+                <div class="report-lines">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            </div>
+            <div class="tool-body">
+              <p class="tool-kicker">CLI / reports</p>
+              <h3>JWW Gateway</h3>
+              <p>Jw_cadのJWWファイルを読み込み、JSON変換や診断レポートとして連携しやすい形にします。</p>
+              <div class="tool-links">
+                <a class="tool-link primary" href="https://fdoyoshikazuhora-sys.github.io/jww-gateway/">開く</a>
+                <a class="tool-link" href="https://github.com/fdoyoshikazuhora-sys/jww-gateway">GitHub</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="tool-card calculator">
+            <div class="preview preview-surface calculator" aria-hidden="true">
+              <div class="calc-row">
+                <span></span>
+                <span></span>
+              </div>
+              <div class="calc-row">
+                <span></span>
+                <span></span>
+              </div>
+              <div class="calc-result">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div class="tool-body">
+              <p class="tool-kicker">Calculator</p>
+              <h3>Equipment Design Calculator</h3>
+              <p>設備設計で使う計算をブラウザ上で扱うための公開計算ツールです。</p>
+              <div class="tool-links">
+                <a class="tool-link primary" href="https://fdoyoshikazuhora-sys.github.io/equipment-design-calculator/">開く</a>
+                <a class="tool-link" href="https://github.com/fdoyoshikazuhora-sys/equipment-design-calculator">GitHub</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="policy" aria-labelledby="policy-title">
+        <div class="section-header">
+          <h2 id="policy-title">公開元の整理</h2>
+          <p class="section-note">このページをトップに置き、各ツールは専用リポジトリで保守します。</p>
+        </div>
+        <div class="info-band">
+          <div class="info-block">
+            <h3>入口は一つに</h3>
+            <p>検索や共有ではこのトップページを案内し、利用者は目的に合わせて各ツールへ移動できます。</p>
+          </div>
+          <div class="info-block">
+            <h3>ツールは分けて保守</h3>
+            <p>既存の公開URLとリポジトリを残すため、更新や不具合対応の影響範囲を小さくできます。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>設計支援ツール集</span>
+      <div class="footer-links">
+        <a href="https://github.com/fdoyoshikazuhora-sys">GitHub</a>
+        <a href="sitemap.xml">Sitemap</a>
+      </div>
+    </footer>
+  </body>
+</html>
